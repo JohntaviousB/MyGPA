@@ -1,4 +1,10 @@
 package mygpa.Objects;
+
+/**
+ * This class is a bit superfluous at the moment because it basically on
+ * stores the name of the instructor. However, it gives me more flexibiity
+ * should I wish to add modifications to the app in the future
+ */
 public class Instructor {
 	
 	private String firstName, lastName;

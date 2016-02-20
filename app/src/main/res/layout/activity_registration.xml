@@ -107,7 +107,9 @@
                     android:layout_height="wrap_content"
                     android:text="Cancel"
                     android:id="@+id/registration_cancel_button"
-                    android:onClick="cancelRegisterActivity" />
+                    android:onClick="cancelRegisterActivity"
+                    android:textColor="#d6daef"
+                    android:background="@color/colorPrimary"/>
 
                 <Button
                     style="?android:attr/buttonStyleSmall"
@@ -116,7 +118,9 @@
                     android:text="Register"
                     android:id="@+id/registration_register_button"
                     android:onClick="registerUser"
-                    android:layout_marginLeft="10dp" />
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/colorPrimary"
+                    android:textColor="#d6daef"/>
             </LinearLayout>
 
         </LinearLayout>

@@ -4,37 +4,27 @@ import java.util.Map;
 
 public class Course {
 
-    private String name;
     private Instructor instructor;
-    private String number;
     private Semester semester;
     private int year;
     private int creditHours;
     private Map<String, Double> weights;
     private boolean inProgress;
+    private String id;
 
-    public Course(String name, Instructor inst, String num, Semester sem, int
-            year, int credits, Map<String, Double> weights) {
-        this.name = name;
+    public Course(String id, Instructor inst, Semester sem, int year, int
+            credits, Map<String, Double> weights, boolean ip) {
         this.instructor = inst;
-        this.number = num;
         this.semester = sem;
         this.year = year;
         this.creditHours = credits;
         this.weights = weights;
-        this.inProgress = false;
-    }
-
-    public String getName() {
-        return name;
+        this.inProgress = ip;
+        this.id = id;
     }
 
     public Instructor getInstructor() {
         return instructor;
-    }
-
-    public String getNumber() {
-        return number;
     }
 
     public Semester getSemester() {
@@ -57,27 +47,9 @@ public class Course {
         return inProgress;
     }
 
-    public boolean setName(String s) {
-        if (s != null && s.length() > 0) {
-            this.name = s;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public boolean setInstructor(Instructor i) {
         if (i != null) {
             this.instructor = i;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean setNumber(String n) {
-        if (n != null && n.length() > 0) {
-            this.number = n;
             return true;
         } else {
             return false;
@@ -134,17 +106,25 @@ public class Course {
         this.inProgress = b;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Course)) {
             return false;
         } else {
             Course that = (Course) o;
-            return this.name.equals(that.name) &&
-                    this.number.equals(that.number) &&
+            return this.id.equals(that.id) &&
                     this.instructor == that.instructor &&
                     this.semester == that.semester &&
                     this.year == that.year;
         }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
