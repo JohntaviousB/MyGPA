@@ -2,12 +2,16 @@ package mygpa.Persistence;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import mygpa.Objects.Course;
+import mygpa.Objects.Instructor;
+import mygpa.Objects.Semester;
 import mygpa.Objects.User;
 
 /**
@@ -18,7 +22,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
 
 
     // Constants used in construction of database
-    private static final int DATABASE_VERSION = 0;
+    private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "MyGPA.db";
 
     // Constants used in construction of users table
@@ -69,7 +73,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String createUsersTable = "CREATE TABLE" + TABLE_USERS + "("
+        String createUsersTable = "CREATE TABLE " + TABLE_USERS + "("
                 + COLUMN_FIRST_NAME + " TEXT, "
                 + COLUMN_LAST_NAME + " TEXT, "
                 + COLUMN_USERNAME + " TEXT PRIMARY KEY, "
@@ -78,7 +82,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
                 + COLUMN_MAJOR + " TEXT, "
                 + COLUMN_GPA + " REAL)";
 
-        String createCoursesTable = "CREATE TABLE" + TABLE_COURSES + "("
+        String createCoursesTable = "CREATE TABLE " + TABLE_COURSES + "("
                 + COLUMN_COURSE_ID + " TEXT, "
                 + COLUMN_INSTRUCTOR_FIRST_NAME + " TEXT, "
                 + COLUMN_INSTRUCTOR_LAST_NAME + " TEXT, "
@@ -90,7 +94,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
                 + "PRIMARY KEY (" + COLUMN_COURSE_ID + ", " + COLUMN_SEMESTER
                 + ", " + COLUMN_YEAR + "))";
 
-        String createTableCourseWeights = "CREATE TABLE" +
+        String createTableCourseWeights = "CREATE TABLE " +
                 TABLE_COURSE_WEIGHTS + "("
                 + COLUMN_CW_ID + " INTEGER, "
                 + COLUMN_CW_CATEGORY + " TEXT, "
@@ -98,7 +102,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
                 + "PRIMARY KEY (" + COLUMN_CW_ID + ", " + COLUMN_CW_CATEGORY
                 + "), FOREIGN KEY (" + COLUMN_CW_ID + ") REFERENCES "
                 + TABLE_COURSES + "(" + COLUMN_COURSE_ID + ") ON UPDATE CASCADE"
-                + "ON DELETE CASCADE)";
+                + " ON DELETE CASCADE)";
 
         db.execSQL(createUsersTable);
         db.execSQL(createCoursesTable);
@@ -183,6 +187,126 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
         cv.put(COLUMN_UC_GRADE, grade);
         SQLiteDatabase db = this.getWritableDatabase();
         db.update(TABLE_COURSES, cv, COLUMN_COURSE_ID + "= ?", new
-                String[] {course.getId()});
+                String[]{course.getId()});
+    }
+
+    /**
+     * Since this is not an online application, just check if the user
+     * entered the correct username and password to successfully login.
+     * @param username The username entered by the user
+     * @param pw The password entered by the user
+     * @return true if the user entered valid credentials, false otherwise
+     */
+    public boolean correctUser(String username, String pw) {
+        String query = "SELECT " + COLUMN_USERNAME + ", " + COLUMN_PASSWORD
+                + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = "
+                + "'" + username + "' AND " + COLUMN_PASSWORD + "= '"
+                + pw + "'";
+
+        Cursor queryResult = this.getWritableDatabase().rawQuery(query, null);
+
+        return queryResult.moveToFirst();
+    }
+
+    public User retrieveUser() {
+        String userQuery = "SELECT * FROM " + TABLE_USERS;
+        Cursor cursor = this.getWritableDatabase().rawQuery(userQuery, null);
+
+        if (!cursor.moveToFirst()) throw new NoRegisteredUserException
+                ("Attempted to retrieve a user when there is no user present " +
+                        "in the database. Dang. ");
+        else {
+            String firstName = cursor.getString(0);
+            String lastName = cursor.getString(1);
+            String username = cursor.getString(2);
+            String password = cursor.getString(3);
+            String school = cursor.getString(4);
+            String major = cursor.getString(5);
+            String gpa = cursor.getString(6);
+            double actualGPA = Double.parseDouble(gpa);
+
+            User user = new User(firstName, lastName, username, password,
+                    school, major);
+            user.setGpa(actualGPA);
+            return user;
+        }
+    }
+
+    /**
+     * Similar to {@code retrieveUser()}, this retrieves the Courses taken by
+     * the user and maps each course to its grade
+     * @return the mapping of each course to its grade
+     */
+    public Map<Course, Double> retrieveCourses() {
+        /**
+         * We have to retrieve each course and then retrieve the weights for
+         * assignments for  each course we retrieved.
+         */
+        String coursesQuery = "SELECT * FROM " + TABLE_COURSES;
+        Cursor cursor = this.getWritableDatabase().rawQuery(coursesQuery, null);
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            throw new NoRegisteredCoursesException(" Attempted to retrieve " +
+                    "courses when there were none present! ");
+        } else {
+            Map<Course, Double> result = new HashMap<>();
+            do {
+                String id = cursor.getString(0);
+                String firstName = cursor.getString(1);
+                String lastName = cursor.getString(2);
+                String semester = cursor.getString(3);
+                String year = cursor.getString(4);
+                String creditHours = cursor.getString(5);
+                String grade = cursor.getString(6);
+                String inProgress = cursor.getString(7);
+
+                Semester actualSemester = semester.equals("Spring") ?
+                        Semester.Spring : semester.equals("Summer") ?
+                        Semester.Summer : Semester.Fall;
+                int actualYear = Integer.parseInt(year);
+                int actualCreditHours = Integer.parseInt(creditHours);
+                double actualGrade = Double.parseDouble(grade);
+                boolean actualInProgress = Integer.parseInt(inProgress) != 0;
+
+                //We just retrieved one course, now query the database for
+                // its weights
+                Map<String, Double> weights = new HashMap<>();
+                String weightsQuery = "SELECT * FROM " + TABLE_COURSE_WEIGHTS
+                        + " WHERE " + COLUMN_CW_ID + " = '" + id + "'";
+                Cursor weightsCursor = this.getWritableDatabase().rawQuery
+                        (weightsQuery, null);
+                if ( weightsCursor.moveToFirst() ) {
+
+                    do {
+                        String category = weightsCursor.getString(1);
+                        String weight = weightsCursor.getString(2);
+                        double actualWeight = Double.parseDouble(weight);
+                        weights.put(category, actualWeight);
+                    } while ( weightsCursor.moveToNext() );
+
+                    weightsCursor.close();
+                }
+                //We've got all the weights (if any) for the current course. We
+                // can now create and add an instance to our final Map
+                // result
+                Course currentCourse = new Course(id, new Instructor
+                        (firstName, lastName), actualSemester,
+                        actualYear, actualCreditHours, weights,
+                        actualInProgress);
+                result.put(currentCourse, actualGrade);
+            } while (cursor.moveToNext());
+            return result;
+        }
+    }
+
+    public class NoRegisteredUserException extends RuntimeException {
+        public NoRegisteredUserException(String m) {
+            super(m);
+        }
+    }
+    public class NoRegisteredCoursesException extends RuntimeException {
+        public NoRegisteredCoursesException(String m) {
+            super(m);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package mygpa.Models;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.Map;
 
@@ -41,13 +42,22 @@ public class ModelSingleton {
      */
     public void addUser(String fn, String ln, String un, String pw, String
             school, String major) {
-        User toAdd = new User(fn, ln, un, pw, school, major, null);
+        User toAdd = new User(fn, ln, un, pw, school, major);
         if (!doesUserExist(un, pw)) {
             sql.addUser(toAdd);
             this.currentUser = toAdd;
         }
     }
-
+    public void signIn() {
+        currentUser = sql.retrieveUser();
+        try {
+            currentUser.setClasses(sql.retrieveCourses());
+        }
+        catch (SQLiteHelper.NoRegisteredCoursesException e) {
+            //No harm no foul, the user will just have to add some courses
+            Log.e("NO_COURSES", e.getMessage());
+        }
+    }
     public void addCourse(String name, String instructorFirstName, String
             instructorLastName, Semester sem, int year, int hours, boolean
             ip, Map<String, Double> weights) {
@@ -56,11 +66,14 @@ public class ModelSingleton {
         sql.addCourse(toAdd);
     }
 
-    public void loadClasses() {
-        currentUser.setClasses(null /*Todo*/);
-    }
+    /**
+     * Will load the classes associated with the current user
+     */
+//    public void loadClasses() {
+//        currentUser.setClasses(null /*Todo*/);
+//    }
     public boolean doesUserExist(String username, String password) {
-        return false;
+        return sql.correctUser(username, password);
     }
 
     public boolean doesCourseExist(Course course) {

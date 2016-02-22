@@ -15,15 +15,14 @@ public class User {
 
 
     public User(String first, String last, String username, String password,
-                String school, String major, Map<Course, Double> classes) {
+                String school, String major) {
         this.firstName = first;
         this.lastName = last;
         this.username = username;
         this.password = password;
         this.school = school;
         this.major = major;
-        this.classes = classes;
-        this.gpa = classes.isEmpty() ? 0 : Utils.calcGPA(classes);
+//        this.gpa = classes.isEmpty() ? 0 : Utils.calcGPA(classes);
     }
 
     public String getFirstName() {
@@ -72,7 +71,7 @@ public class User {
 
     public void setClasses(Map<Course, Double> classes) {
         this.classes = classes;
-        //TODO calc gpa
+        this.gpa = classes.isEmpty() ? 0 : Utils.calcGPA(classes);
     }
 
     public void addCourse(Course course, Double grade) {
