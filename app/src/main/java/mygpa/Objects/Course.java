@@ -2,7 +2,7 @@ package mygpa.Objects;
 
 import java.util.Map;
 
-public class Course {
+public class Course implements Comparable<Course> {
 
     private Instructor instructor;
     private Semester semester;
@@ -120,11 +120,43 @@ public class Course {
         }
     }
 
+    @Override
+    public String toString() {
+        // prints details separated by commas
+        /**
+         * args[0] = Course Name
+         * args[1] = Instructor First Name
+         * args[2] = Instructor Last Name
+         * args[3] = Semester
+         * args[4] = Year
+         * args[5] = In Progress
+         */
+        return id +"," + instructor.getFirstName() + "," + instructor
+                .getLastName() + "," + semester.toString() + "," + year + ","
+                + inProgress;
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * Order by year first (most recent first), then semester, then course name
+     * @param another
+     * @return negative number if this instance should go first
+     */
+    @Override
+    public int compareTo(Course another) {
+        if (this.year != another.year) {
+            return another.year - this.year;
+        }
+        if (this.semester != another.semester) {
+            return another.semester.ordinal() - this.semester.ordinal();
+        }
+        return this.id.compareTo(another.id);
     }
 }

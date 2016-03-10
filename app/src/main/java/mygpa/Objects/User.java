@@ -1,6 +1,7 @@
 package mygpa.Objects;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 public class User {
 
@@ -22,7 +23,8 @@ public class User {
         this.password = password;
         this.school = school;
         this.major = major;
-//        this.gpa = classes.isEmpty() ? 0 : Utils.calcGPA(classes);
+        this.classes = new TreeMap<>();
+        this.gpa = classes.isEmpty() ? 0 : Utils.calcGPA(classes);
     }
 
     public String getFirstName() {
@@ -58,7 +60,7 @@ public class User {
     }
 
     public double getGpa() {
-        return gpa;
+        return Utils.calcGPA(classes);
     }
 
     public void setGpa(double gpa) {

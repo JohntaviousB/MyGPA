@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import mygpa.Models.ModelSingleton;
@@ -16,7 +17,16 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         singleton = ModelSingleton.getInstance(this);
+
+        Button registerButton = (Button) findViewById(R.id.register_button);
+        if (!singleton.canUserRegister()) {
+            registerButton.setVisibility(View.INVISIBLE);
+            //If there is already an account present, the user will not be
+            // allowed to register.
+            /**Todo create recovery mechanism **/
+        }
     }
 
     /**
@@ -34,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
             //If there is no username input
             usernameET.requestFocus();
             usernameET.setError("Enter your username!");
-        } else if (password.trim().length() == 0) {
+        } else if (password.length() == 0) {
             passwordET.requestFocus();
             passwordET.setError("Enter your password!");
         } else {

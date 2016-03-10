@@ -3,6 +3,7 @@ import java.util.Map;
 
 public class Utils {
 	public static double calcGPA(Map<Course, Double> classes) {
+		if (classes == null) return 0;
 		int totalHours = 0;
 		double totalPoints = 0;
 		boolean haveCompletedACourse = false;

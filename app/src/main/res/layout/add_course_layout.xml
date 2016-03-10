@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorPrimaryDark">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView3">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:layout_width="135dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/course_dialog_course_id"
+                android:layout_alignParentEnd="false"
+                android:hint="Course Number"
+                android:singleLine="true"
+                android:layout_marginLeft="5dp"
+                android:textColorHint="#d6daef"
+                android:textColor="#d6daef"
+                android:layout_marginTop="15dp"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="In Progress?"
+                android:id="@+id/in_progress_check_box"
+                android:textColor="#d6daef"
+                android:layout_alignBottom="@+id/course_dialog_course_id"
+                android:layout_toEndOf="@+id/course_dialog_course_id"
+                android:layout_marginStart="41dp"/>
+
+            <EditText
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/course_dialog_instructor_first"
+                android:layout_below="@id/course_dialog_course_id"
+                android:textColor="#d6daef"
+                android:textColorHint="#d6daef"
+                android:hint="Teacher First Name"
+                android:layout_marginTop="20dp"/>
+            <EditText
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/course_dialog_instructor_last"
+                android:layout_toRightOf="@id/course_dialog_instructor_first"
+                android:layout_below="@id/in_progress_check_box"
+                android:textColor="#d6daef"
+                android:textColorHint="#d6daef"
+                android:hint="Last Name"
+                android:layout_marginTop="20dp"/>
+
+            <Spinner
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/semester_spinner"
+                android:layout_below="@id/course_dialog_instructor_first"
+                android:spinnerMode="dialog"
+                android:layout_marginBottom="60dp"
+                android:layout_marginTop="20dp"
+                android:layout_toStartOf="@+id/in_progress_check_box"/>
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/numberPicker"
+                android:layout_below="@id/course_dialog_instructor_last"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/semester_spinner"
+                android:layout_marginTop="20dp"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/credit_hours"
+                android:layout_toRightOf="@id/numberPicker"
+                android:layout_below="@id/course_dialog_instructor_last"
+                android:hint="Hours"
+                android:singleLine="true"
+                android:textColorHint="#d6daef"
+                android:textColor="#d6daef"
+                android:layout_marginLeft="10dp"
+                android:width="55dp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_below="@id/numberPicker"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="15dp">
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel"
+                    android:textColor="#d6daef"
+                    android:background="@color/colorPrimary"
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/cancel_add_course"/>
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ok"
+                    android:textColor="#d6daef"
+                    android:id="@+id/add_course_ok_button"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/colorPrimary"/>
+            </LinearLayout>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/course_dialog_grade"
+                android:layout_below="@+id/credit_hours"
+                android:layout_alignStart="@+id/credit_hours"
+                android:width="55dp"
+                android:textColor="#d6daef"
+                android:textColorHint="#d6daef"
+                android:singleLine="false"
+                android:selectAllOnFocus="false"
+                android:hint="Points"/>
+
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

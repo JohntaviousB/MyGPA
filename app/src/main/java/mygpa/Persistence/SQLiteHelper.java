@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import mygpa.Objects.Course;
 import mygpa.Objects.Instructor;
@@ -22,7 +23,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
 
 
     // Constants used in construction of database
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "MyGPA.db";
 
     // Constants used in construction of users table
@@ -156,6 +157,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
         cv.put(COLUMN_SEMESTER, course.getSemester().toString());
         cv.put(COLUMN_YEAR, course.getYear());
         cv.put(COLUMN_CREDIT_HOURS, course.getCreditHours());
+        cv.put(COLUMN_UC_IN_PROGRESS, course.inProgress() ? 1 : 0);
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_COURSES, null, cv);
@@ -163,13 +165,14 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
         cv = new ContentValues();
 
         //Now we include the course weights
-        for (Map.Entry<String, Double> entry : course.getWeights().entrySet()) {
-            cv.put(COLUMN_CW_ID, course.getId());
-            cv.put(COLUMN_CW_CATEGORY, entry.getKey());
-            cv.put(COLUMN_CW_WEIGHT, entry.getValue());
-            db.insert(TABLE_COURSE_WEIGHTS, null, cv);
+        if (!course.getWeights().isEmpty()) {
+            for (Map.Entry<String, Double> entry : course.getWeights().entrySet()) {
+                cv.put(COLUMN_CW_ID, course.getId());
+                cv.put(COLUMN_CW_CATEGORY, entry.getKey());
+                cv.put(COLUMN_CW_WEIGHT, entry.getValue());
+                db.insert(TABLE_COURSE_WEIGHTS, null, cv);
+            }
         }
-
         db.close();
     }
 
@@ -249,7 +252,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
             throw new NoRegisteredCoursesException(" Attempted to retrieve " +
                     "courses when there were none present! ");
         } else {
-            Map<Course, Double> result = new HashMap<>();
+            Map<Course, Double> result = new TreeMap<>();
             do {
                 String id = cursor.getString(0);
                 String firstName = cursor.getString(1);
@@ -270,7 +273,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements
 
                 //We just retrieved one course, now query the database for
                 // its weights
-                Map<String, Double> weights = new HashMap<>();
+                Map<String, Double> weights = new TreeMap<>();
                 String weightsQuery = "SELECT * FROM " + TABLE_COURSE_WEIGHTS
                         + " WHERE " + COLUMN_CW_ID + " = '" + id + "'";
                 Cursor weightsCursor = this.getWritableDatabase().rawQuery
